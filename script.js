@@ -3,11 +3,25 @@ const matchesTableBody = document.querySelector("#matches-table tbody");
 
 let participants = [];
 
+// Load participants from localStorage on page load
+window.onload = () => {
+  const saved = localStorage.getItem("participants");
+  if (saved) {
+    participants = JSON.parse(saved);
+    displayMatches();
+  }
+};
+
 form.addEventListener("submit", function (e) {
   e.preventDefault();
 
   const name = document.getElementById("name").value.trim();
-  const dob = new Date(document.getElementById("dob").value);
+  const dobInput = document.getElementById("dob").value;
+  if (!dobInput) {
+    alert("Please select date of birth.");
+    return;
+  }
+  const dob = new Date(dobInput);
   const gender = document.getElementById("gender").value;
   const weight = parseFloat(document.getElementById("weight").value);
 
@@ -16,11 +30,14 @@ form.addEventListener("submit", function (e) {
   const weightGroup = getWeightGroup(category, gender, weight);
 
   if (!category || !weightGroup) {
-    alert("No matching weight group found!");
+    alert("No matching category or weight group found!");
     return;
   }
 
   participants.push({ name, category, gender, weightGroup });
+
+  // Save updated participants list to localStorage
+  localStorage.setItem("participants", JSON.stringify(participants));
 
   displayMatches();
   form.reset();
@@ -97,6 +114,7 @@ function getWeightGroup(category, gender, weight) {
 }
 
 function displayMatches() {
+  // Group participants by category-gender-weightGroup
   const grouped = {};
 
   participants.forEach(p => {
@@ -109,6 +127,8 @@ function displayMatches() {
 
   Object.entries(grouped).forEach(([group, names]) => {
     const [category, gender, weightGroup] = group.split("-");
+    const participantCount = names.length;
+
     for (let i = 0; i < names.length; i += 2) {
       const player1 = names[i];
       const player2 = names[i + 1] || "(no opponent)";
@@ -117,6 +137,7 @@ function displayMatches() {
         <td>${category}</td>
         <td>${gender}</td>
         <td>${weightGroup}</td>
+        <td>${participantCount}</td>
         <td>${player1} vs ${player2}</td>
       `;
       matchesTableBody.appendChild(row);

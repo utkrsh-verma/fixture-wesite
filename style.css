@@ -1,86 +1,106 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f4f8;
   margin: 0;
-  padding: 0;
+  padding: 20px;
+  color: #222;
 }
 
 .container {
-  max-width: 500px;
-  margin: 30px auto;
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 10px;
   padding: 20px;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
 
 h1 {
-  color: #007bff;
   text-align: center;
+  margin-bottom: 5px;
+  color: #004080;
 }
 
 .developer {
   text-align: center;
-  color: #888;
   font-size: 14px;
   margin-bottom: 20px;
+  color: #555;
 }
 
 form {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 10px;
+  margin-bottom: 25px;
+  justify-content: center;
 }
 
-input, select, button {
+form input, form select, form button {
   padding: 10px;
   font-size: 16px;
+  border-radius: 5px;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  flex: 1 1 150px;
+  min-width: 150px;
+  max-width: 220px;
 }
 
-button {
-  background-color: #28a745;
+form button {
+  background-color: #004080;
   color: white;
   border: none;
   cursor: pointer;
+  max-width: 150px;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #218838;
+form button:hover {
+  background-color: #0066cc;
 }
 
-#matches {
-  margin-top: 30px;
+#matches h2 {
+  text-align: center;
+  color: #004080;
+  margin-bottom: 15px;
 }
 
-#matches-table {
+table {
   width: 100%;
   border-collapse: collapse;
-}
-
-#matches-table th,
-#matches-table td {
-  border: 1px solid #ccc;
-  padding: 8px;
   text-align: center;
+  font-size: 14px;
 }
 
-#matches-table th {
-  background-color: #f1f1f1;
+thead th {
+  background-color: #004080;
+  color: white;
+  padding: 12px 10px;
 }
 
-@media screen and (max-width: 600px) {
-  .container {
-    margin: 15px;
-    padding: 15px;
-  }
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
 
-  input, select, button {
-    font-size: 14px;
-  }
+tbody td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #ddd;
+}
 
-  h1 {
-    font-size: 20px;
+@media (max-width: 600px) {
+  form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  form input, form select, form button {
+    max-width: 100%;
+  }
+  tbody td {
+    font-size: 12px;
+    padding: 8px 5px;
   }
 }
