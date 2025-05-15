@@ -1,146 +1,123 @@
-const form = document.getElementById("participant-form");
-const matchesTableBody = document.querySelector("#matches-table tbody");
-
-let participants = [];
-
-// Load participants from localStorage on page load
-window.onload = () => {
-  const saved = localStorage.getItem("participants");
-  if (saved) {
-    participants = JSON.parse(saved);
-    displayMatches();
+// Utility: calculate age from dob string
+function calculateAge(dobStr) {
+  const dob = new Date(dobStr);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+    age--;
   }
-};
+  return age;
+}
 
-form.addEventListener("submit", function (e) {
+// Categorize participant
+function getCategory(age) {
+  if (age < 8) return 'Mini Sub Junior';
+  if (age >= 8 && age < 14) return 'Sub Junior';
+  if (age >= 14 && age < 18) return 'Junior';
+  if (age >= 18 && age <= 35) return 'Senior';
+  return 'Veteran';
+}
+
+// Weight categories
+const weightCategories = [
+  { min: 25, max: 30 },
+  { min: 30, max: 35 },
+  { min: 35, max: 40 },
+  { min: 40, max: 45 },
+  { min: 45, max: 50 },
+  { min: 50, max: 55 },
+];
+
+// Shuffle function
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+const form = document.getElementById('add-form');
+const matchesContainer = document.getElementById('matches-container');
+
+let participants = JSON.parse(localStorage.getItem('participants')) || [];
+
+form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  const name = document.getElementById("name").value.trim();
-  const dobInput = document.getElementById("dob").value;
-  if (!dobInput) {
-    alert("Please select date of birth.");
-    return;
-  }
-  const dob = new Date(dobInput);
-  const gender = document.getElementById("gender").value;
-  const weight = parseFloat(document.getElementById("weight").value);
+  const name = document.getElementById('name').value.trim();
+  const dob = document.getElementById('dob').value;
+  const gender = document.getElementById('gender').value;
+  const weight = parseFloat(document.getElementById('weight').value);
 
-  const age = calculateAge(dob);
-  const category = getAgeCategory(age);
-  const weightGroup = getWeightGroup(category, gender, weight);
-
-  if (!category || !weightGroup) {
-    alert("No matching category or weight group found!");
+  if (!name || !dob || !gender || isNaN(weight)) {
+    alert('Please fill all fields correctly');
     return;
   }
 
-  participants.push({ name, category, gender, weightGroup });
-
-  // Save updated participants list to localStorage
-  localStorage.setItem("participants", JSON.stringify(participants));
-
-  displayMatches();
+  participants.push({ name, dob, gender, weight });
+  localStorage.setItem('participants', JSON.stringify(participants));
   form.reset();
+  renderMatches();
 });
 
-function calculateAge(dob) {
-  const diff = Date.now() - dob.getTime();
-  const ageDate = new Date(diff);
-  return Math.abs(ageDate.getUTCFullYear() - 1970);
-}
+function renderMatches() {
+  if (participants.length === 0) {
+    matchesContainer.innerHTML = '<p>No participants added yet.</p>';
+    return;
+  }
 
-function getAgeCategory(age) {
-  if (age < 8) return "Mini Sub Junior";
-  if (age >= 8 && age < 14) return "Sub Junior";
-  if (age >= 14 && age < 18) return "Junior";
-  if (age >= 18 && age <= 35) return "Senior";
-  return null;
-}
+  // Group participants by Category -> Weight Category -> Gender
+  const groups = {};
 
-function getWeightGroup(category, gender, weight) {
-  const weightGroups = {
-    "Mini Sub Junior": {
-      Male: [
-        [0, 15], [15, 18], [18, 21], [21, 24], [24, 27],
-        [27, 30], [30, 33], [33, Infinity]
-      ],
-      Female: [
-        [0, 13], [13, 16], [16, 19], [19, 22], [22, 25],
-        [25, 28], [28, 31], [31, Infinity]
-      ]
-    },
-    "Sub Junior": {
-      Male: [
-        [0, 20], [20, 24], [24, 28], [28, 32], [32, 36],
-        [36, 40], [40, 45], [45, 52], [52, Infinity]
-      ],
-      Female: [
-        [0, 18], [18, 21], [21, 24], [24, 28], [28, 32],
-        [32, 36], [36, 40], [40, 46], [46, Infinity]
-      ]
-    },
-    "Junior": {
-      Male: [
-        [0, 38], [38, 42], [42, 46], [46, 50], [50, 55],
-        [55, 60], [60, 66], [66, 73], [73, Infinity]
-      ],
-      Female: [
-        [0, 36], [36, 40], [40, 44], [44, 48], [48, 52],
-        [52, 56], [56, 62], [62, Infinity]
-      ]
-    },
-    "Senior": {
-      Male: [
-        [0, 50], [50, 55], [55, 60], [60, 65], [65, 70],
-        [70, 76], [76, 83], [83, 90], [90, Infinity]
-      ],
-      Female: [
-        [0, 44], [44, 48], [48, 52], [52, 56], [56, 60],
-        [60, 66], [66, 72], [72, Infinity]
-      ]
-    }
-  };
+  participants.forEach(p => {
+    const age = calculateAge(p.dob);
+    const category = getCategory(age);
 
-  const group = weightGroups[category]?.[gender];
-  if (!group) return null;
+    // Find weight category bucket
+    const weightCat = weightCategories.find(wc => p.weight >= wc.min && p.weight < wc.max);
 
-  for (let range of group) {
-    if (weight > range[0] && weight <= range[1]) {
-      return `${range[0] === 0 ? '<=' : `> ${range[0]}`}–${range[1]} Kg`;
+    const weightLabel = weightCat ? `${weightCat.min} to ${weightCat.max} kg` : 'Other Weight';
+
+    if (!groups[category]) groups[category] = {};
+    if (!groups[category][weightLabel]) groups[category][weightLabel] = { Male: [], Female: [] };
+
+    groups[category][weightLabel][p.gender].push(p);
+  });
+
+  // Build HTML
+  let html = '';
+  for (const category in groups) {
+    html += `<h3>${category} Category</h3>`;
+
+    for (const weightLabel in groups[category]) {
+      html += `<h4>Weight: ${weightLabel}</h4>`;
+
+      ['Male', 'Female'].forEach(gender => {
+        const group = groups[category][weightLabel][gender];
+        if (group.length === 0) return;
+
+        html += `<h5>${gender}s (${group.length} participant${group.length > 1 ? 's' : ''})</h5>`;
+        shuffleArray(group);
+
+        html += `<table><thead><tr><th>Fighter 1</th><th>vs</th><th>Fighter 2</th></tr></thead><tbody>`;
+
+        // Generate matches pairwise
+        for (let i = 0; i < group.length; i += 2) {
+          if (i + 1 < group.length) {
+            html += `<tr><td>${group[i].name}</td><td>vs</td><td>${group[i + 1].name}</td></tr>`;
+          } else {
+            html += `<tr><td colspan="3">${group[i].name} has no opponent</td></tr>`;
+          }
+        }
+
+        html += `</tbody></table>`;
+      });
     }
   }
 
-  return null;
+  matchesContainer.innerHTML = html;
 }
 
-function displayMatches() {
-  // Group participants by category-gender-weightGroup
-  const grouped = {};
-
-  participants.forEach(p => {
-    const key = `${p.category}-${p.gender}-${p.weightGroup}`;
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(p.name);
-  });
-
-  matchesTableBody.innerHTML = "";
-
-  Object.entries(grouped).forEach(([group, names]) => {
-    const [category, gender, weightGroup] = group.split("-");
-    const participantCount = names.length;
-
-    for (let i = 0; i < names.length; i += 2) {
-      const player1 = names[i];
-      const player2 = names[i + 1] || "(no opponent)";
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${category}</td>
-        <td>${gender}</td>
-        <td>${weightGroup}</td>
-        <td>${participantCount}</td>
-        <td>${player1} vs ${player2}</td>
-      `;
-      matchesTableBody.appendChild(row);
-    }
-  });
-}
+// Initial render matches on page load
+renderMatches();

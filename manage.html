@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Participants - Vovinam Championship</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Manage Participants</h1>
+    <a href="index.html" class="back-link">← Back to Add Participants</a>
+
+    <table id="participants-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Date of Birth</th>
+          <th>Gender</th>
+          <th>Weight (Kg)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="edit-form-container" style="display:none; margin-top:20px;">
+      <h2>Edit Participant</h2>
+      <form id="edit-form">
+        <input type="text" id="edit-name" placeholder="Name" required />
+        <input type="date" id="edit-dob" required />
+        <select id="edit-gender" required>
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+        <input type="number" id="edit-weight" placeholder="Weight (kg)" required step="0.1" />
+        <button type="submit">Save Changes</button>
+        <button type="button" id="cancel-edit">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="manage.js"></script>
+</body>
+</html>

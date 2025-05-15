@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vovinam Championship Matchmaker</title>
+  <title>Vovinam Championship - Add Participants</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Vovinam Championship Matchmaker</h1>
-    <div class="developer">Developed by Utkarsh Verma</div>
+    <h1>Vovinam Championship - Add Participants</h1>
+    <a href="manage.html" class="back-link">Manage Participants →</a>
 
-    <form id="participant-form">
+    <form id="add-form">
       <input type="text" id="name" placeholder="Name" required />
       <input type="date" id="dob" required />
       <select id="gender" required>
@@ -19,27 +19,12 @@
         <option value="Male">Male</option>
         <option value="Female">Female</option>
       </select>
-      <input type="number" id="weight" placeholder="Weight (kg)" required step="0.1" />
+      <input type="number" id="weight" placeholder="Weight (kg)" required step="0.1" min="0" />
       <button type="submit">Add Participant</button>
     </form>
 
-    <div id="matches">
-      <h2>Matches</h2>
-      <table id="matches-table">
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>Gender</th>
-            <th>Weight Group</th>
-            <th>Participants</th>
-            <th>Match</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Matches appear here -->
-        </tbody>
-      </table>
-    </div>
+    <h2>Matches</h2>
+    <div id="matches-container"></div>
   </div>
 
   <script src="script.js"></script>
