@@ -2,35 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vovinam Championship Matcher</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vovinam Matchmaker</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="container">
+    <h1>Vovinam Championship Matchmaker</h1>
+    <p class="credit">Developed by Utkarsh Verma</p>
+    <form id="participant-form">
+      <input type="text" id="name" placeholder="Name" required />
+      <input type="date" id="dob" required />
+      <select id="gender" required>
+        <option value="">Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+      <input type="number" id="weight" placeholder="Weight (kg)" required />
+      <button type="submit">Add Participant</button>
+    </form>
 
-  <h1>India Vovinam Championship Matcher</h1>
-
-  <form id="participantForm">
-    <label for="name">Participant Name</label>
-    <input type="text" id="name" required />
-
-    <label for="dob">Date of Birth</label>
-    <input type="date" id="dob" required />
-
-    <label for="gender">Gender</label>
-    <select id="gender" required>
-      <option value="">Select Gender</option>
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-    </select>
-
-    <label for="weight">Weight (Kg)</label>
-    <input type="number" id="weight" min="0" step="0.1" required />
-
-    <button type="submit">Add Participant</button>
-  </form>
-
-  <div id="fights"></div>
+    <div id="result">
+      <h2>Matches</h2>
+      <div id="matches"></div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

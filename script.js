@@ -1,69 +1,110 @@
-document.getElementById("participantForm").addEventListener("submit", function (e) {
+const participants = [];
+
+document.getElementById('participant-form').addEventListener('submit', function (e) {
   e.preventDefault();
 
-  const name = document.getElementById("name").value.trim();
-  const dob = document.getElementById("dob").value;
-  const gender = document.getElementById("gender").value;
-  const weight = parseFloat(document.getElementById("weight").value);
+  const name = document.getElementById('name').value.trim();
+  const dob = new Date(document.getElementById('dob').value);
+  const gender = document.getElementById('gender').value;
+  const weight = parseFloat(document.getElementById('weight').value);
 
-  const age = calculateAge(dob);
-  const ageGroup = getAgeGroup(age);
-  const weightCategory = getWeightCategory(ageGroup, gender, weight);
+  const age = getAge(dob);
+  const category = getCategory(age);
+  const weightCategory = getWeightCategory(category, gender, weight);
 
-  const result = document.createElement("p");
-  result.textContent = `${name} (${gender}, Age: ${age}) → Age Group: ${ageGroup}, Weight Group: ${weightCategory || "N/A"}`;
+  if (!weightCategory) {
+    alert('No matching weight category found.');
+    return;
+  }
 
-  document.getElementById("fights").appendChild(result);
-
+  participants.push({ name, age, gender, weight, category, weightCategory });
+  displayMatches();
   this.reset();
 });
 
-function calculateAge(dob) {
-  const birthDate = new Date(dob);
+function getAge(dob) {
   const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
     age--;
   }
   return age;
 }
 
-function getAgeGroup(age) {
-  if (age < 8) return "Mini Sub Junior";
-  if (age >= 8 && age < 14) return "Sub Junior";
-  if (age >= 14 && age < 18) return "Junior";
-  if (age >= 18 && age <= 35) return "Senior";
-  return "Unknown";
+function getCategory(age) {
+  if (age < 8) return 'Mini Sub Junior';
+  if (age < 14) return 'Sub Junior';
+  if (age < 18) return 'Junior';
+  return 'Senior';
 }
 
-function getWeightCategory(ageGroup, gender, weight) {
+function getWeightCategory(category, gender, weight) {
   const categories = {
-    "Mini Sub Junior": { male: [0, 15, 18, 21], female: [0, 13, 16, 19] },
-    "Sub Junior": { male: [0, 24, 28, 32], female: [0, 21, 24, 28] },
-    Junior: { male: [0, 42, 46, 50], female: [0, 40, 44, 48] },
-    Senior: { male: [0, 55, 60, 65], female: [0, 48, 52, 56] },
+    'Mini Sub Junior': {
+      Male: [15, 18, 21, 24, 27, 30, 33, Infinity],
+      Female: [13, 16, 19, 22, 25, 28, 31, Infinity]
+    },
+    'Sub Junior': {
+      Male: [20, 24, 28, 32, 36, 40, 45, 52, Infinity],
+      Female: [18, 21, 24, 28, 32, 36, 40, 46, Infinity]
+    },
+    'Junior': {
+      Male: [38, 42, 46, 50, 55, 60, 66, 73, Infinity],
+      Female: [36, 40, 44, 48, 52, 56, 62, Infinity]
+    },
+    'Senior': {
+      Male: [50, 55, 60, 65, 70, 76, 83, 90, Infinity],
+      Female: [44, 48, 52, 56, 60, 66, 72, Infinity]
+    }
   };
 
-  const group = categories[ageGroup];
-  if (!group) return null;
-
-  const limits = group[gender];
+  const limits = categories[category]?.[gender];
   if (!limits) return null;
 
-  for (let i = 0; i < limits.length - 1; i++) {
-    if (weight > limits[i] && weight <= limits[i + 1]) {
-      return `Above ${limits[i]} Kg to ${limits[i + 1]} Kg`;
+  for (let i = 0; i < limits.length; i++) {
+    if (weight <= limits[i]) {
+      return `${i === 0 ? '≤' : limits[i - 1] + '–'}${limits[i]} Kg`;
     }
   }
-
-  if (weight <= limits[0]) {
-    return `Below & Upto ${limits[0]} Kg`;
-  }
-
-  if (weight > limits[limits.length - 1]) {
-    return `Above ${limits[limits.length - 1]} Kg`;
-  }
-
   return null;
+}
+
+function displayMatches() {
+  const matchContainer = document.getElementById('matches');
+  matchContainer.innerHTML = '';
+
+  const grouped = {};
+
+  for (const p of participants) {
+    const key = `${p.category} - ${p.gender} - ${p.weightCategory}`;
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(p.name);
+  }
+
+  for (const key in grouped) {
+    const names = grouped[key];
+    shuffleArray(names);
+    const matches = [];
+
+    for (let i = 0; i < names.length; i += 2) {
+      if (i + 1 < names.length) {
+        matches.push(`${names[i]} vs ${names[i + 1]}`);
+      } else {
+        matches.push(`${names[i]} (no opponent)`);
+      }
+    }
+
+    const div = document.createElement('div');
+    div.classList.add('match-group');
+    div.innerHTML = `<h3>${key}</h3><ul>${matches.map(m => `<li>${m}</li>`).join('')}</ul>`;
+    matchContainer.appendChild(div);
+  }
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }
