@@ -1,31 +1,29 @@
 body {
   font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
   margin: 0;
   padding: 0;
-  background: #f9f9f9;
-  color: #333;
 }
 
 .container {
-  max-width: 600px;
-  margin: 20px auto;
+  max-width: 500px;
+  margin: 30px auto;
   padding: 20px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
+  color: #007bff;
   text-align: center;
-  margin-bottom: 10px;
-  color: #0066cc;
 }
 
-.credit {
+.developer {
   text-align: center;
+  color: #888;
   font-size: 14px;
   margin-bottom: 20px;
-  color: #777;
 }
 
 form {
@@ -34,13 +32,11 @@ form {
   gap: 10px;
 }
 
-input,
-select,
-button {
+input, select, button {
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 6px;
 }
 
 button {
@@ -48,7 +44,6 @@ button {
   color: white;
   border: none;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 button:hover {
@@ -56,18 +51,36 @@ button:hover {
 }
 
 #matches {
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
-@media (max-width: 600px) {
+#matches-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#matches-table th,
+#matches-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+#matches-table th {
+  background-color: #f1f1f1;
+}
+
+@media screen and (max-width: 600px) {
   .container {
-    margin: 10px;
+    margin: 15px;
     padding: 15px;
   }
 
-  input,
-  select,
-  button {
+  input, select, button {
     font-size: 14px;
+  }
+
+  h1 {
+    font-size: 20px;
   }
 }
